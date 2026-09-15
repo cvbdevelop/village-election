@@ -1,9 +1,15 @@
-Password: admin123
-Hash: $2a$10$abcdefghijklmnopqrstuvwxyz1234567890
----
-Password: observer123
-Hash: $2a$10$zyxwvutsrqponmlkjihgfedcba0987654321
----
 
 Root Password:
 MeF091415@2026
+
+Password: admin123
+Hash: $2b$10$EBITpDcWQb76qv8vhv5aD.gdB/zjsqvuaLov4Ek.PiBLi5PrRgbAS
+---
+Password: observer123
+Hash: $2b$10$MbquE1sqA93HHAeWRWi2oOkyqCVWhvpx3mks6r2ooxE9yyT15qD5u
+
+---
+
+village-election-production.up.railway.app
+
+https://village-election-eight.vercel.app/login

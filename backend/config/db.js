@@ -1,26 +1,28 @@
-const mysql = require('mysql2');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = mysql.createPool({
+const pool = new Pool({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 5432,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  charset: 'utf8mb4',
+  database: process.env.DB_NAME || 'postgres',
+  ssl: { rejectUnauthorized: false }, // ចាំបាច់សម្រាប់ Supabase
 });
 
-const promisePool = pool.promise();
-
-pool.getConnection((err, connection) => {
+pool.connect((err, client, release) => {
   if (err) {
-    console.error('❌ MySQL Connection Error:', err.message);
+    console.error('❌ PostgreSQL Connection Error:', err.message);
     return;
   }
-  console.log('✅ MySQL Connected Successfully!');
-  connection.release();
+  console.log('✅ Supabase PostgreSQL Connected Successfully!');
+  release();
 });
 
-module.exports = promisePool;
+const query = async (text, params) => {
+  let i = 1;
+  const formattedText = text.replace(/\?/g, () => `$${i++}`);
+  return pool.query(formattedText, params);
+};
+
+module.exports = { query, pool };

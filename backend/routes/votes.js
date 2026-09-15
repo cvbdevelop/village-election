@@ -2,76 +2,51 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
-// POST បោះឆ្នោត
 router.post('/', async (req, res) => {
-  const connection = await db.getConnection();
+  const client = await db.pool.connect();
   try {
-    await connection.beginTransaction();
-
+    await client.query('BEGIN');
     const { candidateId, voterId } = req.body;
     if (!candidateId || !voterId) {
+      await client.query('ROLLBACK');
       return res.status(400).json({ error: 'សូមជ្រើសរើសបេក្ខជន' });
     }
-
-    const [voters] = await connection.query(
-      'SELECT voted FROM voters WHERE id = ?',
-      [voterId]
-    );
-
-    if (voters.length === 0) {
-      await connection.rollback();
+    const voters = await client.query('SELECT voted FROM voters WHERE id = $1', [voterId]);
+    if (voters.rows.length === 0) {
+      await client.query('ROLLBACK');
       return res.status(404).json({ error: 'រកមិនឃើញអ្នកបោះឆ្នោត' });
     }
-
-    if (voters[0].voted) {
-      await connection.rollback();
+    if (voters.rows[0].voted) {
+      await client.query('ROLLBACK');
       return res.status(400).json({ error: 'អ្នកបានបោះឆ្នោតរួចហើយ!' });
     }
-
-    await connection.query(
-      'INSERT INTO votes (candidate_id, voter_id) VALUES (?, ?)',
-      [candidateId, voterId]
-    );
-
-    await connection.query(
-      'UPDATE voters SET voted = TRUE WHERE id = ?',
-      [voterId]
-    );
-
-    await connection.commit();
+    await client.query('INSERT INTO votes (candidate_id, voter_id) VALUES ($1, $2)', [candidateId, voterId]);
+    await client.query('UPDATE voters SET voted = TRUE WHERE id = $1', [voterId]);
+    await client.query('COMMIT');
     res.json({ success: true, message: 'បោះឆ្នោតដោយជោគជ័យ' });
   } catch (error) {
-    await connection.rollback();
+    await client.query('ROLLBACK');
     console.error(error);
     res.status(500).json({ error: 'Server Error' });
   } finally {
-    connection.release();
+    client.release();
   }
 });
 
-// GET លទ្ធផលបោះឆ្នោត
 router.get('/results', async (req, res) => {
   try {
-    const [rows] = await db.query(`
-      SELECT 
-        c.id,
-        c.number,
-        c.name,
-        c.party_role AS party,
-        c.photo,
-        COUNT(v.id) AS votes
+    const result = await db.query(`
+      SELECT c.id, c.name, c.party_role AS party, c.number, c.photo, COUNT(v.id)::int AS votes
       FROM candidates c
       LEFT JOIN votes v ON c.id = v.candidate_id
       GROUP BY c.id
       ORDER BY votes DESC
     `);
-
-    const totalVotes = rows.reduce((sum, r) => sum + r.votes, 0);
-    const results = rows.map((r) => ({
+    const totalVotes = result.rows.reduce((sum, r) => sum + r.votes, 0);
+    const results = result.rows.map((r) => ({
       ...r,
       percent: totalVotes > 0 ? ((r.votes / totalVotes) * 100).toFixed(2) : 0,
     }));
-
     res.json({ results, totalVotes });
   } catch (error) {
     console.error(error);
