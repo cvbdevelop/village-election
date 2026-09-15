@@ -21,21 +21,17 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'សូមបំពេញឈ្មោះ និងអត្តសញ្ញាណប័ណ្ណ' });
     }
 
-    const [existing] = await db.query(
-      'SELECT * FROM voters WHERE id_card = ?',
-      [idCard]
-    );
+    const [existing] = await db.query('SELECT * FROM voters WHERE id_card = ?', [idCard]);
     if (existing.length > 0) {
       return res.status(400).json({ error: 'អត្តសញ្ញាណប័ណ្ណនេះមានរួចហើយ!' });
     }
 
-    const [result] = await db.query(
-      'INSERT INTO voters (name, id_card, commune, station) VALUES (?, ?, ?, ?)',
+    const [rows] = await db.query(
+      `INSERT INTO voters (name, id_card, commune, station) 
+       VALUES (?, ?, ?, ?) RETURNING *`,
       [name, idCard, commune, station]
     );
-
-    const [newVoter] = await db.query('SELECT * FROM voters WHERE id = ?', [result.insertId]);
-    res.status(201).json(newVoter[0]);
+    res.status(201).json(rows[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server Error' });
@@ -48,13 +44,12 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { name, idCard, commune, station } = req.body;
 
-    await db.query(
-      'UPDATE voters SET name = ?, id_card = ?, commune = ?, station = ? WHERE id = ?',
+    const [rows] = await db.query(
+      `UPDATE voters SET name = ?, id_card = ?, commune = ?, station = ? 
+       WHERE id = ? RETURNING *`,
       [name, idCard, commune, station, id]
     );
-
-    const [updated] = await db.query('SELECT * FROM voters WHERE id = ?', [id]);
-    res.json(updated[0]);
+    res.json(rows[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server Error' });
