@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+/* កំណត់ CSS Variables ជា rgb ជំនួស oklch */
+:root {
+  --color-primary: 30 64 175;
+  --color-secondary: 245 158 11;
+  --color-success: 16 185 129;
+  --color-danger: 239 68 68;
+}
+
+body {
+  font-family: 'Noto Sans Khmer', sans-serif;
+  background-color: #f3f4f6;
+}
+
+/* ជំនួសពណ៌ oklch ទាំងអស់ដោយ rgb */
+.bg-primary { background-color: rgb(30 64 175) !important; }
+.text-primary { color: rgb(30 64 175) !important; }
+.border-primary { border-color: rgb(30 64 175) !important; }
+.ring-primary { --tw-ring-color: rgb(30 64 175) !important; }
+
+.bg-secondary { background-color: rgb(245 158 11) !important; }
+.bg-success { background-color: rgb(16 185 129) !important; }
+.bg-danger { background-color: rgb(239 68 68) !important; }
+
+.bg-blue-500 { background-color: rgb(59 130 246) !important; }
+.bg-green-500 { background-color: rgb(34 197 94) !important; }
+.bg-yellow-500 { background-color: rgb(234 179 8) !important; }
+.bg-red-500 { background-color: rgb(239 68 68) !important; }
+
+.bg-gray-100 { background-color: rgb(243 244 246) !important; }
+.bg-gray-50 { background-color: rgb(249 250 251) !important; }
+.bg-gray-400 { background-color: rgb(156 163 175) !important; }
+.bg-gray-500 { background-color: rgb(107 114 128) !important; }
+.bg-gray-600 { background-color: rgb(75 85 99) !important; }
+
+.text-gray-400 { color: rgb(156 163 175) !important; }
+.text-gray-500 { color: rgb(107 114 128) !important; }
+.text-gray-600 { color: rgb(75 85 99) !important; }
+.text-gray-700 { color: rgb(55 65 81) !important; }
+.text-green-600 { color: rgb(22 163 74) !important; }
+.text-red-500 { color: rgb(239 68 68) !important; }
+.text-red-600 { color: rgb(220 38 38) !important; }
+.text-blue-500 { color: rgb(59 130 246) !important; }
+
+.bg-red-600 { background-color: rgb(220 38 38) !important; }
+.bg-green-600 { background-color: rgb(22 163 74) !important; }
+
+.border-gray-300 { border-color: rgb(209 213 219) !important; }
+.border-green-400 { border-color: rgb(74 222 128) !important; }
+.border-transparent { border-color: transparent !important; }
+
+.bg-green-100 { background-color: rgb(220 252 231) !important; }
+.text-green-700 { color: rgb(21 128 61) !important; }
+
+.bg-yellow-50 { background-color: rgb(254 252 232) !important; }
+
+.bg-white { background-color: #ffffff !important; }
+
+/* បង្កើន Font Size សម្រាប់តំបន់ Export PDF */
+#print-area,
+#candidates-print-area,
+#voters-print-area,
+#results-print-area {
+  font-size: 18px !important;
+  padding: 30px !important;
+  min-width: 800px !important; /* កំណត់ទំហំអប្បបរមា ដើម្បីឱ្យអក្សរធំ */
+}
+
+#print-area h2,
+#candidates-print-area h2,
+#voters-print-area h2,
+#results-print-area h2 {
+  font-size: 28px !important;
+  font-weight: bold !important;
+  margin-bottom: 15px !important;
+}
+
+#print-area p,
+#candidates-print-area p,
+#voters-print-area p,
+#results-print-area p {
+  font-size: 16px !important;
+}
+
+#print-area table,
+#candidates-print-area table,
+#voters-print-area table,
+#results-print-area table {
+  font-size: 18px !important;
+  width: 100% !important;
+}
+
+#print-area th,
+#candidates-print-area th,
+#voters-print-area th,
+#results-print-area th {
+  font-size: 18px !important;
+  padding: 15px !important;
+  font-weight: bold !important;
+}
+
+#print-area td,
+#candidates-print-area td,
+#voters-print-area td,
+#results-print-area td {
+  font-size: 17px !important;
+  padding: 12px !important;
+}
+
+/* សម្រាប់ការបោះពុម្ពសន្លឹកឆ្នោត */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  nav,
+  aside,
+  header {
+    display: none !important;
+  }
+  
+  main {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .ballot-page {
+    page-break-after: always;
+    box-shadow: none !important;
+  }
+  
+  .ballot-page:last-child {
+    page-break-after: auto;
+  }
+}
+
+/* ស្ទីលសម្រាប់សន្លឹកឆ្នោតលើអេក្រង់ */
+.ballot-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.ballot-page {
+  max-width: 210mm;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

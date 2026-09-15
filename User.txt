@@ -1,0 +1,9 @@
+Password: admin123
+Hash: $2a$10$abcdefghijklmnopqrstuvwxyz1234567890
+---
+Password: observer123
+Hash: $2a$10$zyxwvutsrqponmlkjihgfedcba0987654321
+---
+
+Root Password:
+MeF091415@2026
