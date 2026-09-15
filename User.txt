@@ -13,3 +13,8 @@ Hash: $2b$10$MbquE1sqA93HHAeWRWi2oOkyqCVWhvpx3mks6r2ooxE9yyT15qD5u
 village-election-production.up.railway.app
 
 https://village-election-eight.vercel.app/login
+
+
+Supabase Password:
+
+Election2026Secure
