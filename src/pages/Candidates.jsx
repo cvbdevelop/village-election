@@ -1,23 +1,12 @@
-import { getCommunes } from '../data/locations';
 import React, { useState, useEffect } from 'react';
 import {
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaSave,
-  FaTimes,
-  FaFilePdf,
-  FaCamera,
-  FaExclamationTriangle,
-  FaEye,
+  FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaFilePdf, FaCamera, FaExclamationTriangle, FaEye,
 } from 'react-icons/fa';
 import { exportCandidatesToPDF } from '../utils/pdfExport';
 import CandidateDetailModal from '../components/CandidateDetailModal';
+import { getCommunes } from '../data/locations';
 import {
-  apiGetCandidates,
-  apiAddCandidate,
-  apiUpdateCandidate,
-  apiDeleteCandidate,
+  apiGetCandidates, apiAddCandidate, apiUpdateCandidate, apiDeleteCandidate,
 } from '../utils/api';
 
 const Candidates = () => {
@@ -27,24 +16,22 @@ const Candidates = () => {
   const [photoPreview, setPhotoPreview] = useState('');
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-
-  // State សម្រាប់ Modal
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const [form, setForm] = useState({
-  number: '',
-  name: '',
-  gender: '',
-  dob: '',
-  education: '',
-  address: '',
-  commune: '', // ⬅️ បន្ថែមថ្មី
-  party_role: '',
-  gov_role: '',
-  nec_id: '',
-  photo: '',
-});
+    number: '',
+    name: '',
+    gender: '',
+    dob: '',
+    education: '',
+    address: '',
+    commune: '',
+    party_role: '',
+    gov_role: '',
+    nec_id: '',
+    photo: '',
+  });
 
   const loadCandidates = async () => {
     try {
@@ -64,23 +51,14 @@ const Candidates = () => {
 
   const resetForm = () => {
     setForm({
-      number: '',
-      name: '',
-      gender: '',
-      dob: '',
-      education: '',
-      address: '',
-      party_role: '',
-      gov_role: '',
-      nec_id: '',
-      photo: '',
+      number: '', name: '', gender: '', dob: '', education: '',
+      address: '', commune: '', party_role: '', gov_role: '', nec_id: '', photo: '',
     });
     setPhotoPreview('');
     setEditingId(null);
     setErrors({});
   };
 
-  // ============ Validation ============
   const validateForm = () => {
     const newErrors = {};
 
@@ -92,17 +70,17 @@ const Candidates = () => {
       const duplicate = candidates.find(
         (c) => parseInt(c.number) === parseInt(form.number) && c.id !== editingId
       );
-      if (duplicate) {
-        newErrors.number = 'លេខរៀងនេះមានរួចហើយ!';
-      }
+      if (duplicate) newErrors.number = 'លេខរៀងនេះមានរួចហើយ!';
     }
 
     if (!form.name || form.name.trim().length < 2) {
       newErrors.name = 'ឈ្មោះត្រូវតែមានយ៉ាងហោចណាស់ ២ តួអក្សរ!';
     }
-
     if (!form.gender) {
       newErrors.gender = 'សូមជ្រើសរើសភេទ!';
+    }
+    if (!form.commune) {
+      newErrors.commune = 'សូមជ្រើសរើសឃុំ!';
     }
 
     if (form.dob) {
@@ -112,9 +90,7 @@ const Candidates = () => {
         newErrors.dob = 'ថ្ងៃខែឆ្នាំកំណើតត្រូវតែជាកាលបរិច្ឆេទអតីតកាល!';
       } else {
         const age = today.getFullYear() - dob.getFullYear();
-        if (age < 18) {
-          newErrors.dob = 'បេក្ខជនត្រូវតែមានអាយុយ៉ាងហោចណាស់ ១៨ ឆ្នាំ!';
-        }
+        if (age < 18) newErrors.dob = 'បេក្ខជនត្រូវតែមានអាយុយ៉ាងហោចណាស់ ១៨ ឆ្នាំ!';
       }
     }
 
@@ -126,9 +102,7 @@ const Candidates = () => {
       const duplicate = candidates.find(
         (c) => c.nec_id === form.nec_id && c.id !== editingId
       );
-      if (duplicate) {
-        newErrors.nec_id = 'អត្តលេខ គជប នេះមានរួចហើយ!';
-      }
+      if (duplicate) newErrors.nec_id = 'អត្តលេខ គជប នេះមានរួចហើយ!';
     }
 
     if (form.photo && !form.photo.startsWith('data:image/')) {
@@ -192,6 +166,7 @@ const Candidates = () => {
       dob: candidate.dob ? candidate.dob.split('T')[0] : '',
       education: candidate.education || '',
       address: candidate.address || '',
+      commune: candidate.commune || '',
       party_role: candidate.party_role || '',
       gov_role: candidate.gov_role || '',
       nec_id: candidate.nec_id || '',
@@ -222,7 +197,6 @@ const Candidates = () => {
     await exportCandidatesToPDF();
   };
 
-  // ============ Modal Functions ============
   const handleViewDetail = (candidate) => {
     setSelectedCandidate(candidate);
     setShowModal(true);
@@ -246,10 +220,7 @@ const Candidates = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">គ្រប់គ្រងបេក្ខជន</h1>
-        <button
-          onClick={handleExportPDF}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700 transition"
-        >
+        <button onClick={handleExportPDF} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700 transition">
           <FaFilePdf /> ទាញយក PDF
         </button>
       </div>
@@ -259,148 +230,69 @@ const Candidates = () => {
         <h2 className="text-lg font-semibold mb-4">
           {editingId ? '✏️ កែប្រែព័ត៌មានបេក្ខជន' : '➕ បន្ថែមបេក្ខជនថ្មី'}
         </h2>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-semibold mb-1">
-              លេខរៀង <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={form.number}
-              onChange={(e) => setForm({ ...form, number: e.target.value })}
-              className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${
-                errors.number ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'
-              }`}
-            />
+            <label className="block text-sm font-semibold mb-1">លេខរៀង <span className="text-red-500">*</span></label>
+            <input type="number" value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.number ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`} />
             <ErrorMessage error={errors.number} />
           </div>
-
           <div>
-            <label className="block text-sm font-semibold mb-1">
-              ឈ្មោះ <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${
-                errors.name ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'
-              }`}
-            />
+            <label className="block text-sm font-semibold mb-1">ឈ្មោះ <span className="text-red-500">*</span></label>
+            <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.name ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`} />
             <ErrorMessage error={errors.name} />
           </div>
-
           <div>
-            <label className="block text-sm font-semibold mb-1">
-              ភេទ <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={form.gender}
-              onChange={(e) => setForm({ ...form, gender: e.target.value })}
-              className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${
-                errors.gender ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'
-              }`}
-            >
+            <label className="block text-sm font-semibold mb-1">ភេទ <span className="text-red-500">*</span></label>
+            <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.gender ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`}>
               <option value="">-- ជ្រើសរើស --</option>
               <option value="ប្រុស">ប្រុស</option>
               <option value="ស្រី">ស្រី</option>
             </select>
             <ErrorMessage error={errors.gender} />
           </div>
-
           <div>
             <label className="block text-sm font-semibold mb-1">ថ្ងៃខែឆ្នាំកំណើត</label>
-            <input
-              type="date"
-              value={form.dob}
-              onChange={(e) => setForm({ ...form, dob: e.target.value })}
-              className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${
-                errors.dob ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'
-              }`}
-            />
+            <input type="date" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.dob ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`} />
             <ErrorMessage error={errors.dob} />
           </div>
-
           <div>
             <label className="block text-sm font-semibold mb-1">កំរិតវប្បធម៌</label>
-            <input
-              type="text"
-              value={form.education}
-              onChange={(e) => setForm({ ...form, education: e.target.value })}
-              placeholder="ឧ. បរិញ្ញាបត្រ"
-              className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })} placeholder="ឧ. បរិញ្ញាបត្រ" className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
-
           <div>
             <label className="block text-sm font-semibold mb-1">ទីលំនៅបច្ចុប្បន្ន</label>
-            <input
-              type="text"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              placeholder="ឧ. ភូមិ... ឃុំ... ស្រុក... ខេត្ត..."
-              className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="ឧ. ភូមិ... ឃុំ..." className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
-
+          <div>
+            <label className="block text-sm font-semibold mb-1">ឃុំ <span className="text-red-500">*</span></label>
+            <select value={form.commune} onChange={(e) => setForm({ ...form, commune: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.commune ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`}>
+              <option value="">-- ជ្រើសរើសឃុំ --</option>
+              {getCommunes().map((c) => (<option key={c} value={c}>ឃុំ{c}</option>))}
+            </select>
+            <ErrorMessage error={errors.commune} />
+          </div>
           <div>
             <label className="block text-sm font-semibold mb-1">តួនាទីក្នុងបក្ស</label>
-            <input
-              type="text"
-              value={form.party_role}
-              onChange={(e) => setForm({ ...form, party_role: e.target.value })}
-              placeholder="ឧ. សមាជិក..."
-              className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" value={form.party_role} onChange={(e) => setForm({ ...form, party_role: e.target.value })} placeholder="ឧ. សមាជិក..." className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
-
           <div>
             <label className="block text-sm font-semibold mb-1">តួនាទីក្នុងរដ្ឋ</label>
-            <input
-              type="text"
-              value={form.gov_role}
-              onChange={(e) => setForm({ ...form, gov_role: e.target.value })}
-              placeholder="ឧ. មន្ត្រី..."
-              className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" value={form.gov_role} onChange={(e) => setForm({ ...form, gov_role: e.target.value })} placeholder="ឧ. មន្ត្រី..." className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
-
           <div>
-            <label className="block text-sm font-semibold mb-1">
-              អត្តលេខ គជប <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={form.nec_id}
-              onChange={(e) => setForm({ ...form, nec_id: e.target.value })}
-              className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${
-                errors.nec_id ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'
-              }`}
-            />
+            <label className="block text-sm font-semibold mb-1">អត្តលេខ គជប <span className="text-red-500">*</span></label>
+            <input type="text" value={form.nec_id} onChange={(e) => setForm({ ...form, nec_id: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.nec_id ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`} />
             <ErrorMessage error={errors.nec_id} />
           </div>
-
           <div className="md:col-span-3">
             <label className="block text-sm font-semibold mb-1">រូបថត</label>
             <div className="flex items-center gap-4">
               <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 border-2 border-dashed border-gray-400 rounded-lg px-4 py-3 flex items-center gap-2">
                 <FaCamera className="text-gray-600" />
                 <span className="text-sm text-gray-600">ជ្រើសរើសរូបថត</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  className="hidden"
-                />
+                <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
               </label>
-              {photoPreview && (
-                <img
-                  src={photoPreview}
-                  alt="Preview"
-                  className="w-20 h-20 object-cover rounded-lg border shadow"
-                />
-              )}
+              {photoPreview && (<img src={photoPreview} alt="Preview" className="w-20 h-20 object-cover rounded-lg border shadow" />)}
             </div>
             <ErrorMessage error={errors.photo} />
           </div>
@@ -409,44 +301,25 @@ const Candidates = () => {
         <div className="flex gap-3 mt-6">
           {editingId ? (
             <>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className={`rounded-lg px-6 py-2 flex items-center gap-2 transition ${
-                  submitting
-                    ? 'bg-gray-400 cursor-not-allowed text-white'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-              >
+              <button onClick={handleSubmit} disabled={submitting} className={`rounded-lg px-6 py-2 flex items-center gap-2 transition ${submitting ? 'bg-gray-400 cursor-not-allowed text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
                 <FaSave /> {submitting ? 'កំពុងរក្សាទុក...' : 'រក្សាទុក'}
               </button>
-              <button
-                onClick={resetForm}
-                className="bg-gray-500 text-white rounded-lg px-6 py-2 flex items-center gap-2 hover:bg-gray-600 transition"
-              >
+              <button onClick={resetForm} className="bg-gray-500 text-white rounded-lg px-6 py-2 flex items-center gap-2 hover:bg-gray-600 transition">
                 <FaTimes /> បោះបង់
               </button>
             </>
           ) : (
-            <button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className={`rounded-lg px-6 py-2 flex items-center gap-2 transition ${
-                submitting
-                  ? 'bg-gray-400 cursor-not-allowed text-white'
-                  : 'bg-primary hover:bg-blue-700 text-white'
-              }`}
-            >
+            <button onClick={handleSubmit} disabled={submitting} className={`rounded-lg px-6 py-2 flex items-center gap-2 transition ${submitting ? 'bg-gray-400 cursor-not-allowed text-white' : 'bg-primary hover:bg-blue-700 text-white'}`}>
               <FaPlus /> {submitting ? 'កំពុងរក្សាទុក...' : 'បន្ថែមបេក្ខជន'}
             </button>
           )}
         </div>
       </div>
 
-      {/* តារាង */}
+      {/* Table */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <h3 className="p-4 bg-gray-100 font-semibold">គ្រប់គ្រងបេក្ខជន</h3>
-        <table className="w-full text-left min-w-[1200px]">
+        <table className="w-full text-left min-w-[1300px]">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3">រូបថត</th>
@@ -456,6 +329,7 @@ const Candidates = () => {
               <th className="p-3">ថ្ងៃខែឆ្នាំកំណើត</th>
               <th className="p-3">កំរិតវប្បធម៌</th>
               <th className="p-3">ទីលំនៅ</th>
+              <th className="p-3">ឃុំ</th>
               <th className="p-3">តួនាទីក្នុងបក្ស</th>
               <th className="p-3">តួនាទីក្នុងរដ្ឋ</th>
               <th className="p-3">អត្តលេខ គជប</th>
@@ -464,72 +338,28 @@ const Candidates = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="11" className="p-6 text-center text-gray-500">
-                  កំពុងទាញទិន្នន័យ...
-                </td>
-              </tr>
+              <tr><td colSpan="12" className="p-6 text-center text-gray-500">កំពុងទាញទិន្នន័យ...</td></tr>
             ) : candidates.length === 0 ? (
-              <tr>
-                <td colSpan="11" className="p-6 text-center text-gray-500">
-                  មិនទាន់មានបេក្ខជនទេ។
-                </td>
-              </tr>
+              <tr><td colSpan="12" className="p-6 text-center text-gray-500">មិនទាន់មានបេក្ខជនទេ។</td></tr>
             ) : (
               candidates.map((c) => (
-                <tr
-                  key={c.id}
-                  className={`border-b hover:bg-gray-50 transition ${
-                    editingId === c.id ? 'bg-yellow-50' : ''
-                  }`}
-                >
-                  <td className="p-3">
-                    {c.photo ? (
-                      <img
-                        src={c.photo}
-                        alt={c.name}
-                        className="w-12 h-12 object-cover rounded-full border"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs">
-                        គ្មាន
-                      </div>
-                    )}
-                  </td>
+                <tr key={c.id} className={`border-b hover:bg-gray-50 transition ${editingId === c.id ? 'bg-yellow-50' : ''}`}>
+                  <td className="p-3">{c.photo ? <img src={c.photo} alt={c.name} className="w-12 h-12 object-cover rounded-full border" /> : <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs">គ្មាន</div>}</td>
                   <td className="p-3 font-semibold">{c.number}</td>
                   <td className="p-3">{c.name}</td>
                   <td className="p-3">{c.gender}</td>
-                  <td className="p-3">
-                    {c.dob ? new Date(c.dob).toLocaleDateString('km-KH') : '-'}
-                  </td>
+                  <td className="p-3">{c.dob ? new Date(c.dob).toLocaleDateString('km-KH') : '-'}</td>
                   <td className="p-3">{c.education || '-'}</td>
                   <td className="p-3">{c.address || '-'}</td>
+                  <td className="p-3">{c.commune || '-'}</td>
                   <td className="p-3">{c.party_role || '-'}</td>
                   <td className="p-3">{c.gov_role || '-'}</td>
                   <td className="p-3">{c.nec_id || '-'}</td>
                   <td className="p-3">
                     <div className="flex justify-center gap-3">
-                      <button
-                        onClick={() => handleViewDetail(c)}
-                        className="text-green-500 hover:text-green-700 transition"
-                        title="មើលលម្អិត"
-                      >
-                        <FaEye size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(c)}
-                        className="text-blue-500 hover:text-blue-700 transition"
-                        title="កែប្រែ"
-                      >
-                        <FaEdit size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(c.id)}
-                        className="text-red-500 hover:text-red-700 transition"
-                        title="លុប"
-                      >
-                        <FaTrash size={18} />
-                      </button>
+                      <button onClick={() => handleViewDetail(c)} className="text-green-500 hover:text-green-700 transition" title="មើលលម្អិត"><FaEye size={18} /></button>
+                      <button onClick={() => handleEdit(c)} className="text-blue-500 hover:text-blue-700 transition" title="កែប្រែ"><FaEdit size={18} /></button>
+                      <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 transition" title="លុប"><FaTrash size={18} /></button>
                     </div>
                   </td>
                 </tr>
@@ -539,13 +369,8 @@ const Candidates = () => {
         </table>
       </div>
 
-      {/* Modal បង្ហាញព័ត៌មានលម្អិត */}
-      {showModal && (
-        <CandidateDetailModal
-          candidate={selectedCandidate}
-          onClose={handleCloseModal}
-        />
-      )}
+      {/* Modal */}
+      {showModal && (<CandidateDetailModal candidate={selectedCandidate} onClose={handleCloseModal} />)}
     </div>
   );
 };
