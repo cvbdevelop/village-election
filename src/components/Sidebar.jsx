@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaChartBar as FaChartBarIcon } from 'react-icons/fa'; // ប្រសិនបើចង់ប្រើ Icon ផ្សេង
 import { FaIdCard } from 'react-icons/fa'; // ឬ Icon ផ្សេង
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -13,6 +14,7 @@ const menuItems = [
   { path: '/voters', label: 'អ្នកបោះឆ្នោត', icon: <FaUsers /> },
   { path: '/voting', label: 'បោះឆ្នោត', icon: <FaVoteYea /> },
   { path: '/results', label: 'លទ្ធផល', icon: <FaChartBar /> },
+  { path: '/advanced-stats', label: 'ស្ថិតិជ្រៅ', icon: <FaChartBar /> },
   { path: '/print-ballot', label: 'បោះពុម្ពសន្លឹកឆ្នោត', icon: <FaPrint /> },
 ];
 

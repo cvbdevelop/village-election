@@ -11,6 +11,7 @@ import PrintBallot from './pages/PrintBallot';
 import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import CandidateProfiles from './pages/CandidateProfiles';
+import AdvancedStats from './pages/AdvancedStats';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -92,6 +93,8 @@ function App() {
               <Route path="/print-ballot" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><PrintBallot /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
               <Route path="/candidate-profiles" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><CandidateProfiles /></ProtectedRoute>} />
+              // បន្ថែម Route ក្នុង <Routes>
+              <Route path="/advanced-stats" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><AdvancedStats /></ProtectedRoute>} />
             </Routes>
           </main>
         </div>

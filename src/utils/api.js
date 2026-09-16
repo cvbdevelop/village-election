@@ -66,3 +66,4 @@ export const apiGetResults = () => request('/votes/results');
 // ============ STATS ============
 export const apiGetStats = () => request('/stats');
 export const apiGetTimeline = () => request('/stats/timeline');
+export const apiGetAdvancedStats = () => request('/stats/advanced'); // ⬅️ បន្ថែមថ្មី

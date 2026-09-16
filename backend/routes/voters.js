@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 // POST ចុះឈ្មោះអ្នកបោះឆ្នោតថ្មី
 router.post('/', async (req, res) => {
   try {
-    const { name, idCard, commune, village, station } = req.body;
+    const { name, idCard, gender, dob, commune, village, station } = req.body;
     if (!name || !idCard) {
       return res.status(400).json({ error: 'សូមបំពេញឈ្មោះ និងអត្តសញ្ញាណប័ណ្ណ' });
     }
@@ -31,9 +31,9 @@ router.post('/', async (req, res) => {
     }
 
     const [rows] = await db.query(
-      `INSERT INTO voters (name, id_card, commune, village, station) 
-       VALUES (?, ?, ?, ?, ?) RETURNING *`,
-      [name, idCard, commune, village, station]
+      `INSERT INTO voters (name, id_card, gender, dob, commune, village, station) 
+       VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+      [name, idCard, gender || null, dob || null, commune, village, station]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -46,12 +46,12 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, idCard, commune, village, station } = req.body;
+    const { name, idCard, gender, dob, commune, village, station } = req.body;
 
     const [rows] = await db.query(
-      `UPDATE voters SET name = ?, id_card = ?, commune = ?, village = ?, station = ? 
+      `UPDATE voters SET name = ?, id_card = ?, gender = ?, dob = ?, commune = ?, village = ?, station = ? 
        WHERE id = ? RETURNING *`,
-      [name, idCard, commune, village, station, id]
+      [name, idCard, gender || null, dob || null, commune, village, station, id]
     );
     res.json(rows[0]);
   } catch (error) {

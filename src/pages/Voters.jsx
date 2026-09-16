@@ -12,7 +12,7 @@ import {
 const Voters = () => {
   const [voters, setVoters] = useState([]);
   const [search, setSearch] = useState('');
-  const [form, setForm] = useState({ name: '', idCard: '', commune: '', village: '', station: '' });
+  const [form, setForm] = useState({name: '', idCard: '', gender: '', dob: '', commune: '', village: '', station: ''});
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,12 +53,17 @@ const Voters = () => {
   };
 
   const handleEdit = (voter) => {
-    setForm({
-      name: voter.name, idCard: voter.id_card, commune: voter.commune || '',
-      village: voter.village || '', station: voter.station,
-    });
-    setEditingId(voter.id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  setForm({
+    name: voter.name,
+    idCard: voter.id_card,
+    gender: voter.gender || '',
+    dob: voter.dob ? voter.dob.split('T')[0] : '',
+    commune: voter.commune || '',
+    village: voter.village || '',
+    station: voter.station,
+  });
+  setEditingId(voter.id);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id) => {
@@ -104,6 +109,21 @@ const Voters = () => {
             <label className="block text-sm font-semibold mb-1">អត្តសញ្ញាណប័ណ្ណ</label>
             <input type="text" placeholder="អត្តសញ្ញាណប័ណ្ណ" value={form.idCard} onChange={(e) => setForm({ ...form, idCard: e.target.value })} className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
+          {/* ភេទ */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">ភេទ</label>
+            <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+              <option value="">-- ជ្រើសរើស --</option>
+              <option value="ប្រុស">ប្រុស</option>
+              <option value="ស្រី">ស្រី</option>
+            </select>
+          </div>
+
+{/* ថ្ងៃខែឆ្នាំកំណើត */}
+<div>
+  <label className="block text-sm font-semibold mb-1">ថ្ងៃខែឆ្នាំកំណើត</label>
+  <input type="date" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+</div>
           <div>
             <label className="block text-sm font-semibold mb-1">ឃុំ</label>
             <select value={form.commune} onChange={(e) => handleCommuneChange(e.target.value)} className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
