@@ -6,10 +6,10 @@ const db = require('../config/db');
 // GET ស្ថិតិ Dashboard
 router.get('/', async (req, res) => {
   try {
-    const [candidatesCount] = await db.query('SELECT COUNT(*) AS count FROM candidates');
-    const [votersCount] = await db.query('SELECT COUNT(*) AS count FROM voters');
-    const [votedCount] = await db.query('SELECT COUNT(*) AS count FROM voters WHERE voted = TRUE');
-    const [votesCount] = await db.query('SELECT COUNT(*) AS count FROM votes');
+    const [candidatesCount] = await db.query('SELECT COUNT(*)::int AS count FROM candidates');
+    const [votersCount] = await db.query('SELECT COUNT(*)::int AS count FROM voters');
+    const [votedCount] = await db.query('SELECT COUNT(*)::int AS count FROM voters WHERE voted = TRUE');
+    const [votesCount] = await db.query('SELECT COUNT(*)::int AS count FROM votes');
 
     const totalVoters = votersCount[0].count;
     const voted = votedCount[0].count;
@@ -31,36 +31,36 @@ router.get('/', async (req, res) => {
 // GET ការវិវត្តនៃការបោះឆ្នោតតាមពេលវេលា (Timeline)
 router.get('/timeline', async (req, res) => {
   try {
-    // ទាញទិន្នន័យតាមម៉ោង (ក្នុង ២៤ ម៉ោងចុងក្រោយ)
+    // ទាញទិន្នន័យតាមម៉ោង (ក្នុង ២៤ ម៉ោងចុងក្រោយ) - PostgreSQL Syntax
     const [hourlyData] = await db.query(`
       SELECT 
-        DATE_FORMAT(voted_at, '%Y-%m-%d %H:00') AS time_label,
-        COUNT(*) AS vote_count
+        TO_CHAR(voted_at, 'YYYY-MM-DD HH24:00') AS time_label,
+        COUNT(*)::int AS vote_count
       FROM votes
-      WHERE voted_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
-      GROUP BY DATE_FORMAT(voted_at, '%Y-%m-%d %H:00')
+      WHERE voted_at >= NOW() - INTERVAL '24 hours'
+      GROUP BY TO_CHAR(voted_at, 'YYYY-MM-DD HH24:00')
       ORDER BY time_label ASC
     `);
 
     // ទាញទិន្នន័យតាមថ្ងៃ (ក្នុង ៧ ថ្ងៃចុងក្រោយ)
     const [dailyData] = await db.query(`
       SELECT 
-        DATE_FORMAT(voted_at, '%Y-%m-%d') AS time_label,
-        COUNT(*) AS vote_count
+        TO_CHAR(voted_at, 'YYYY-MM-DD') AS time_label,
+        COUNT(*)::int AS vote_count
       FROM votes
-      WHERE voted_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-      GROUP BY DATE_FORMAT(voted_at, '%Y-%m-%d')
+      WHERE voted_at >= NOW() - INTERVAL '7 days'
+      GROUP BY TO_CHAR(voted_at, 'YYYY-MM-DD')
       ORDER BY time_label ASC
     `);
 
     // ទាញទិន្នន័យតាមខែ (ក្នុង ១២ ខែចុងក្រោយ)
     const [monthlyData] = await db.query(`
       SELECT 
-        DATE_FORMAT(voted_at, '%Y-%m') AS time_label,
-        COUNT(*) AS vote_count
+        TO_CHAR(voted_at, 'YYYY-MM') AS time_label,
+        COUNT(*)::int AS vote_count
       FROM votes
-      WHERE voted_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-      GROUP BY DATE_FORMAT(voted_at, '%Y-%m')
+      WHERE voted_at >= NOW() - INTERVAL '12 months'
+      GROUP BY TO_CHAR(voted_at, 'YYYY-MM')
       ORDER BY time_label ASC
     `);
 
