@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 import { FaFilePdf, FaPrint, FaTrophy } from 'react-icons/fa';
 import { exportResultsToPDF } from '../utils/pdfExport';
@@ -42,7 +36,16 @@ const Results = () => {
     party: r.party,
   }));
 
-  const winner = results.length > 0 && totalVotes > 0 ? results[0] : null;
+  // ============ កំណត់អ្នកឈ្នះ (គិតពីករណីស្មើគ្នា) ============
+  const getWinners = () => {
+    if (results.length === 0 || totalVotes === 0) return [];
+    const maxVotes = Math.max(...results.map((r) => r.votes));
+    if (maxVotes === 0) return [];
+    return results.filter((r) => r.votes === maxVotes);
+  };
+
+  const winners = getWinners();
+  const isTie = winners.length > 1;
 
   const handleExportPDF = async () => {
     if (results.length === 0) {
@@ -87,33 +90,47 @@ const Results = () => {
           កាលបរិច្ឆេទ៖ {new Date().toLocaleDateString('km-KH')}
         </p>
 
-        {/* អ្នកឈ្នះ */}
-        {winner && (
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white p-6 rounded-xl mb-6">
-            <div className="flex items-center gap-4">
-              {/* រូបថតអ្នកឈ្នះ */}
-              {winner.photo ? (
-                <img
-                  src={winner.photo}
-                  alt={winner.name}
-                  className="w-24 h-24 object-cover rounded-full border-4 border-white shadow-lg"
-                />
-              ) : (
-                <div className="bg-white bg-opacity-20 p-4 rounded-full">
-                  <FaTrophy size={32} />
+        {/* អ្នកឈ្នះ ឬ ករណីស្មើគ្នា */}
+        {winners.length > 0 && (
+          <div
+            className={`text-white p-6 rounded-xl mb-6 ${
+              isTie
+                ? 'bg-gradient-to-r from-blue-500 to-blue-700'
+                : 'bg-gradient-to-r from-yellow-400 to-yellow-600'
+            }`}
+          >
+            <h3 className="text-sm opacity-90 mb-3 flex items-center gap-2">
+              {isTie ? '🤝 សំឡេងស្មើគ្នា' : '🏆 អ្នកទទួលបានសំឡេងច្រើនជាងគេ'}
+            </h3>
+            <div className="space-y-4">
+              {winners.map((winner) => (
+                <div key={winner.id} className="flex items-center gap-4">
+                  {winner.photo ? (
+                    <img
+                      src={winner.photo}
+                      alt={winner.name}
+                      className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
+                    />
+                  ) : (
+                    <div className="bg-white bg-opacity-20 p-3 rounded-full">
+                      <FaTrophy size={28} />
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-xl font-bold">{winner.name}</p>
+                    <p className="text-sm opacity-90">{winner.party}</p>
+                    <p className="text-base mt-1 font-semibold">
+                      {winner.votes} សំឡេង ({winner.percent}%)
+                    </p>
+                  </div>
                 </div>
-              )}
-              <div>
-                <h3 className="text-sm opacity-90 mb-1">
-                  🏆 អ្នកទទួលបានសំឡេងឆ្នោតច្រើនជាងគេ
-                </h3>
-                <p className="text-2xl font-bold">{winner.name}</p>
-                <p className="text-sm opacity-90">{winner.party}</p>
-                <p className="text-lg mt-1 font-semibold">
-                  {winner.votes} សំឡេង ({winner.percent}%)
-                </p>
-              </div>
+              ))}
             </div>
+            {isTie && (
+              <p className="text-sm mt-4 bg-white bg-opacity-20 p-2 rounded">
+                ⚠️ មានបេក្ខជន {winners.length} នាក់ ដែលទទួលបានសំឡេងស្មើគ្នា ({winners[0].votes} សំឡេង)
+              </p>
+            )}
           </div>
         )}
 
@@ -143,30 +160,35 @@ const Results = () => {
                 </td>
               </tr>
             ) : (
-              results.map((c) => (
-                <tr key={c.id} className="border-b">
-                  <td className="p-3 border text-center">
-                    {c.photo ? (
-                      <img
-                        src={c.photo}
-                        alt={c.name}
-                        className="w-16 h-16 object-cover rounded-full mx-auto border-2 border-gray-200"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto flex items-center justify-center text-gray-400 text-xs">
-                        គ្មាន
-                      </div>
-                    )}
-                  </td>
-                  <td className="p-3 border text-center text-base">{c.number}</td>
-                  <td className="p-3 border text-base">{c.name}</td>
-                  <td className="p-3 border text-base">{c.party}</td>
-                  <td className="p-3 border text-center font-semibold text-base">
-                    {c.votes}
-                  </td>
-                  <td className="p-3 border text-center text-base">{c.percent}%</td>
-                </tr>
-              ))
+              results.map((c) => {
+                const isWinner = winners.some((w) => w.id === c.id);
+                return (
+                  <tr key={c.id} className={`border-b ${isWinner ? 'bg-yellow-50' : ''}`}>
+                    <td className="p-3 border text-center">
+                      {c.photo ? (
+                        <img
+                          src={c.photo}
+                          alt={c.name}
+                          className="w-16 h-16 object-cover rounded-full mx-auto border-2 border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto flex items-center justify-center text-gray-400 text-xs">
+                          គ្មាន
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3 border text-center text-base">{c.number}</td>
+                    <td className="p-3 border text-base font-semibold">
+                      {c.name} {isWinner && '🏆'}
+                    </td>
+                    <td className="p-3 border text-base">{c.party}</td>
+                    <td className="p-3 border text-center font-semibold text-base">
+                      {c.votes}
+                    </td>
+                    <td className="p-3 border text-center text-base">{c.percent}%</td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
           {results.length > 0 && (
@@ -183,7 +205,7 @@ const Results = () => {
         </table>
       </div>
 
-      {/* ក្រាហ្វិក (បង្ហាញលើអេក្រង់តែប៉ុណ្ណោះ) */}
+      {/* ក្រាហ្វិក */}
       <div className="bg-white p-6 rounded-xl shadow">
         <h2 className="text-lg font-semibold mb-4">ក្រាហ្វិកលទ្ធផល</h2>
         {chartData.length > 0 ? (

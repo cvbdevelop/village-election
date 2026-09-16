@@ -1,55 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import {
-  FaUserTie,
-  FaUsers,
-  FaVoteYea,
-  FaCheckCircle,
-  FaTrophy,
-  FaChartPie,
-  FaChartBar,
-  FaChartLine,
-  FaClock,
-  FaFire,
-  FaChartArea,
+  FaUserTie, FaUsers, FaVoteYea, FaCheckCircle, FaTrophy,
+  FaChartPie, FaChartBar, FaChartLine, FaClock, FaFire, FaChartArea,
 } from 'react-icons/fa';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  LineChart,
-  Line,
-  Area,
-  AreaChart,
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  CartesianGrid, PieChart, Pie, Cell, Legend, AreaChart, Area,
 } from 'recharts';
 import { apiGetStats, apiGetResults, apiGetVoters, apiGetTimeline } from '../utils/api';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
-    candidates: 0,
-    voters: 0,
-    voted: 0,
-    notVoted: 0,
-    totalVotes: 0,
-    votePercentage: 0,
+    candidates: 0, voters: 0, voted: 0, notVoted: 0,
+    totalVotes: 0, votePercentage: 0,
   });
   const [chartData, setChartData] = useState([]);
   const [recentVoters, setRecentVoters] = useState([]);
-  const [topCandidate, setTopCandidate] = useState(null);
+  const [topCandidates, setTopCandidates] = useState([]);
+  const [isTie, setIsTie] = useState(false);
   const [timeline, setTimeline] = useState({
-    hourly: [],
-    daily: [],
-    monthly: [],
+    hourly: [], daily: [], monthly: [],
     summary: { totalVotes: 0, avgPerHour: 0, peakHour: null },
   });
-  const [timelineView, setTimelineView] = useState('hourly'); // 'hourly' | 'daily' | 'monthly'
+  const [timelineView, setTimelineView] = useState('hourly');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,22 +41,20 @@ const Dashboard = () => {
         }));
         setChartData(barData);
 
-        if (
-          resultsData.results &&
-          resultsData.results.length > 0 &&
-          resultsData.totalVotes > 0
-        ) {
-          setTopCandidate(resultsData.results[0]);
+        // ============ កំណត់អ្នកឈ្នះ (គិតពីករណីស្មើគ្នា) ============
+        if (resultsData.results && resultsData.results.length > 0 && resultsData.totalVotes > 0) {
+          const maxVotes = Math.max(...resultsData.results.map((r) => r.votes));
+          if (maxVotes > 0) {
+            const winners = resultsData.results.filter((r) => r.votes === maxVotes);
+            setTopCandidates(winners);
+            setIsTie(winners.length > 1);
+          }
         }
 
         const votersData = await apiGetVoters();
-        const votedList = votersData
-          .filter((v) => v.voted)
-          .slice(-5)
-          .reverse();
+        const votedList = votersData.filter((v) => v.voted).slice(-5).reverse();
         setRecentVoters(votedList);
 
-        // ទាញទិន្នន័យ Timeline
         const timelineData = await apiGetTimeline();
         setTimeline(timelineData);
       } catch (error) {
@@ -102,33 +73,12 @@ const Dashboard = () => {
   ];
 
   const statCards = [
-    {
-      label: 'បេក្ខជនសរុប',
-      value: stats.candidates,
-      icon: <FaUserTie />,
-      color: 'bg-blue-500',
-    },
-    {
-      label: 'អ្នកបោះឆ្នោតសរុប',
-      value: stats.voters,
-      icon: <FaUsers />,
-      color: 'bg-green-500',
-    },
-    {
-      label: 'បានបោះឆ្នោត',
-      value: stats.voted,
-      icon: <FaVoteYea />,
-      color: 'bg-yellow-500',
-    },
-    {
-      label: 'មិនទាន់បោះ',
-      value: stats.notVoted,
-      icon: <FaCheckCircle />,
-      color: 'bg-red-500',
-    },
+    { label: 'បេក្ខជនសរុប', value: stats.candidates, icon: <FaUserTie />, color: 'bg-blue-500' },
+    { label: 'អ្នកបោះឆ្នោតសរុប', value: stats.voters, icon: <FaUsers />, color: 'bg-green-500' },
+    { label: 'បានបោះឆ្នោត', value: stats.voted, icon: <FaVoteYea />, color: 'bg-yellow-500' },
+    { label: 'មិនទាន់បោះ', value: stats.notVoted, icon: <FaCheckCircle />, color: 'bg-red-500' },
   ];
 
-  // ទិន្នន័យសម្រាប់ Line Chart តាម View ដែលបានជ្រើស
   const getTimelineData = () => {
     if (timelineView === 'hourly') return timeline.hourly || [];
     if (timelineView === 'daily') return timeline.daily || [];
@@ -152,13 +102,8 @@ const Dashboard = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {statCards.map((stat, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-xl shadow p-6 flex items-center gap-4 hover:shadow-lg transition"
-          >
-            <div className={`${stat.color} text-white p-4 rounded-full text-2xl`}>
-              {stat.icon}
-            </div>
+          <div key={index} className="bg-white rounded-xl shadow p-6 flex items-center gap-4 hover:shadow-lg transition">
+            <div className={`${stat.color} text-white p-4 rounded-full text-2xl`}>{stat.icon}</div>
             <div>
               <p className="text-gray-500 text-sm">{stat.label}</p>
               <p className="text-2xl font-bold">{stat.value}</p>
@@ -173,9 +118,7 @@ const Dashboard = () => {
           <h2 className="text-lg font-bold flex items-center gap-2">
             <FaChartPie className="text-primary" /> ភាគរយអ្នកបានបោះឆ្នោត
           </h2>
-          <span className="text-2xl font-bold text-primary">
-            {stats.votePercentage}%
-          </span>
+          <span className="text-2xl font-bold text-primary">{stats.votePercentage}%</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div
@@ -188,95 +131,86 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Top Candidate */}
-      {topCandidate && (
-        <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-xl shadow p-6 mb-6">
-          <div className="flex items-center gap-6">
-            {topCandidate.photo ? (
-              <img
-                src={topCandidate.photo}
-                alt={topCandidate.name}
-                className="w-24 h-24 object-cover rounded-full border-4 border-white shadow-lg"
-              />
-            ) : (
-              <div className="bg-white bg-opacity-20 p-4 rounded-full">
-                <FaTrophy size={40} />
+      {/* Top Candidate(s) */}
+      {topCandidates.length > 0 && (
+        <div
+          className={`text-white rounded-xl shadow p-6 mb-6 ${
+            isTie
+              ? 'bg-gradient-to-r from-blue-500 to-blue-700'
+              : 'bg-gradient-to-r from-yellow-400 to-yellow-600'
+          }`}
+        >
+          <h2 className="text-sm opacity-90 mb-3">
+            {isTie ? '🤝 បេក្ខជនទទួលបានសំឡេងស្មើគ្នា' : '🏆 បេក្ខជនទទួលបានសំឡេងច្រើនជាងគេ'}
+          </h2>
+          <div className="space-y-4">
+            {topCandidates.map((top) => (
+              <div key={top.id} className="flex items-center gap-4">
+                {top.photo ? (
+                  <img
+                    src={top.photo}
+                    alt={top.name}
+                    className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
+                  />
+                ) : (
+                  <div className="bg-white bg-opacity-20 p-3 rounded-full">
+                    <FaTrophy size={28} />
+                  </div>
+                )}
+                <div>
+                  <p className="text-xl font-bold">{top.name}</p>
+                  <p className="text-sm opacity-90">{top.party}</p>
+                  <p className="text-base mt-1 font-semibold">
+                    {top.votes} សំឡេង ({top.percent}%)
+                  </p>
+                </div>
               </div>
-            )}
-            <div>
-              <h2 className="text-sm opacity-90 mb-1">
-                🏆 បេក្ខជនទទួលបានសំឡេងច្រើនជាងគេ
-              </h2>
-              <p className="text-2xl font-bold">{topCandidate.name}</p>
-              <p className="text-sm opacity-90">{topCandidate.party}</p>
-              <p className="text-lg mt-1 font-semibold">
-                {topCandidate.votes} សំឡេង ({topCandidate.percent}%)
-              </p>
-            </div>
+            ))}
           </div>
+          {isTie && (
+            <p className="text-sm mt-4 bg-white bg-opacity-20 p-2 rounded">
+              ⚠️ មានបេក្ខជន {topCandidates.length} នាក់ ដែលទទួលបានសំឡេងស្មើគ្នា
+            </p>
+          )}
         </div>
       )}
 
-      {/* ============ Line Chart - ការវិវត្តនៃការបោះឆ្នោត ============ */}
+      {/* Line Chart - Timeline */}
       <div className="bg-white rounded-xl shadow p-6 mb-6">
         <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
           <h2 className="text-lg font-bold flex items-center gap-2">
             <FaChartLine className="text-primary" /> ការវិវត្តនៃការបោះឆ្នោត
           </h2>
-
-          {/* Toggle Buttons */}
           <div className="flex gap-2 bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setTimelineView('hourly')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                timelineView === 'hourly'
-                  ? 'bg-primary text-white'
-                  : 'text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              តាមម៉ោង
-            </button>
-            <button
-              onClick={() => setTimelineView('daily')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                timelineView === 'daily'
-                  ? 'bg-primary text-white'
-                  : 'text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              តាមថ្ងៃ
-            </button>
-            <button
-              onClick={() => setTimelineView('monthly')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                timelineView === 'monthly'
-                  ? 'bg-primary text-white'
-                  : 'text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              តាមខែ
-            </button>
+            {['hourly', 'daily', 'monthly'].map((view) => (
+              <button
+                key={view}
+                onClick={() => setTimelineView(view)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
+                  timelineView === view
+                    ? 'bg-primary text-white'
+                    : 'text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {view === 'hourly' ? 'តាមម៉ោង' : view === 'daily' ? 'តាមថ្ងៃ' : 'តាមខែ'}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* ស្ថិតិសង្ខេប */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-3">
             <FaChartArea className="text-blue-600 text-xl" />
             <div>
               <p className="text-xs text-gray-600">សំឡេងឆ្នោតសរុប</p>
-              <p className="text-lg font-bold text-blue-800">
-                {timeline.summary?.totalVotes || 0}
-              </p>
+              <p className="text-lg font-bold text-blue-800">{timeline.summary?.totalVotes || 0}</p>
             </div>
           </div>
           <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-3">
             <FaClock className="text-green-600 text-xl" />
             <div>
               <p className="text-xs text-gray-600">មធ្យមភាគក្នុងម៉ោង</p>
-              <p className="text-lg font-bold text-green-800">
-                {timeline.summary?.avgPerHour || 0}
-              </p>
+              <p className="text-lg font-bold text-green-800">{timeline.summary?.avgPerHour || 0}</p>
             </div>
           </div>
           <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-center gap-3">
@@ -292,7 +226,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Line Chart */}
         {timelineData.length > 0 ? (
           <ResponsiveContainer width="100%" height={350}>
             <AreaChart data={timelineData}>
@@ -327,9 +260,8 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Charts */}
+      {/* Bar Chart + Pie Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Bar Chart */}
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <FaChartBar className="text-primary" /> សំឡេងឆ្នោតតាមបេក្ខជន
@@ -351,7 +283,6 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Pie Chart */}
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <FaChartPie className="text-primary" /> ស្ថិតិអ្នកបោះឆ្នោត
@@ -364,9 +295,7 @@ const Dashboard = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
-                  }
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -418,9 +347,7 @@ const Dashboard = () => {
             </tbody>
           </table>
         ) : (
-          <p className="text-gray-500 text-center py-6">
-            មិនទាន់មានអ្នកបោះឆ្នោតទេ
-          </p>
+          <p className="text-gray-500 text-center py-6">មិនទាន់មានអ្នកបោះឆ្នោតទេ</p>
         )}
       </div>
     </div>
