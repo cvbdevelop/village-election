@@ -157,3 +157,20 @@ body {
   margin: 0 auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+/* សម្រាប់ការបោះពុម្ពសន្លឹកឆ្នោត */
+@media print {
+  .no-print { display: none !important; }
+  nav, aside, header { display: none !important; }
+  main { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  body { background: white !important; margin: 0 !important; padding: 0 !important; }
+  .ballot-page { page-break-after: always; box-shadow: none !important; }
+  .ballot-page:last-child { page-break-after: auto; }
+}
+
+.ballot-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.ballot-page { max-width: 210mm; width: 100%; margin: 0 auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+
+/* ការពារ Horizontal Scroll លើទូរស័ព្ទ */
+html, body { overflow-x: hidden; }
+* { -webkit-tap-highlight-color: transparent; }

@@ -20,17 +20,8 @@ const Candidates = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [form, setForm] = useState({
-    number: '',
-    name: '',
-    gender: '',
-    dob: '',
-    education: '',
-    address: '',
-    commune: '',
-    party_role: '',
-    gov_role: '',
-    nec_id: '',
-    photo: '',
+    number: '', name: '', gender: '', dob: '', education: '',
+    address: '', commune: '', party_role: '', gov_role: '', nec_id: '', photo: '',
   });
 
   const loadCandidates = async () => {
@@ -45,9 +36,7 @@ const Candidates = () => {
     }
   };
 
-  useEffect(() => {
-    loadCandidates();
-  }, []);
+  useEffect(() => { loadCandidates(); }, []);
 
   const resetForm = () => {
     setForm({
@@ -61,54 +50,35 @@ const Candidates = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!form.number) {
-      newErrors.number = 'សូមបំពេញលេខរៀង!';
-    } else if (isNaN(form.number) || parseInt(form.number) <= 0) {
-      newErrors.number = 'លេខរៀងត្រូវតែជាលេខវិជ្ជមាន!';
-    } else {
-      const duplicate = candidates.find(
-        (c) => parseInt(c.number) === parseInt(form.number) && c.id !== editingId
-      );
+    if (!form.number) newErrors.number = 'សូមបំពេញលេខរៀង!';
+    else if (isNaN(form.number) || parseInt(form.number) <= 0) newErrors.number = 'លេខរៀងត្រូវតែជាលេខវិជ្ជមាន!';
+    else {
+      const duplicate = candidates.find((c) => parseInt(c.number) === parseInt(form.number) && c.id !== editingId);
       if (duplicate) newErrors.number = 'លេខរៀងនេះមានរួចហើយ!';
     }
 
-    if (!form.name || form.name.trim().length < 2) {
-      newErrors.name = 'ឈ្មោះត្រូវតែមានយ៉ាងហោចណាស់ ២ តួអក្សរ!';
-    }
-    if (!form.gender) {
-      newErrors.gender = 'សូមជ្រើសរើសភេទ!';
-    }
-    if (!form.commune) {
-      newErrors.commune = 'សូមជ្រើសរើសឃុំ!';
-    }
+    if (!form.name || form.name.trim().length < 2) newErrors.name = 'ឈ្មោះត្រូវតែមានយ៉ាងហោចណាស់ ២ តួអក្សរ!';
+    if (!form.gender) newErrors.gender = 'សូមជ្រើសរើសភេទ!';
+    if (!form.commune) newErrors.commune = 'សូមជ្រើសរើសឃុំ!';
 
     if (form.dob) {
       const dob = new Date(form.dob);
       const today = new Date();
-      if (dob >= today) {
-        newErrors.dob = 'ថ្ងៃខែឆ្នាំកំណើតត្រូវតែជាកាលបរិច្ឆេទអតីតកាល!';
-      } else {
+      if (dob >= today) newErrors.dob = 'ថ្ងៃខែឆ្នាំកំណើតត្រូវតែជាកាលបរិច្ឆេទអតីតកាល!';
+      else {
         const age = today.getFullYear() - dob.getFullYear();
         if (age < 18) newErrors.dob = 'បេក្ខជនត្រូវតែមានអាយុយ៉ាងហោចណាស់ ១៨ ឆ្នាំ!';
       }
     }
 
-    if (!form.nec_id) {
-      newErrors.nec_id = 'សូមបំពេញអត្តលេខ គជប!';
-    } else if (!/^\d{6,}$/.test(form.nec_id)) {
-      newErrors.nec_id = 'អត្តលេខ គជប ត្រូវតែជាលេខយ៉ាងហោចណាស់ ៦ ខ្ទង់!';
-    } else {
-      const duplicate = candidates.find(
-        (c) => c.nec_id === form.nec_id && c.id !== editingId
-      );
+    if (!form.nec_id) newErrors.nec_id = 'សូមបំពេញអត្តលេខ គជប!';
+    else if (!/^\d{6,}$/.test(form.nec_id)) newErrors.nec_id = 'អត្តលេខ គជប ត្រូវតែជាលេខយ៉ាងហោចណាស់ ៦ ខ្ទង់!';
+    else {
+      const duplicate = candidates.find((c) => c.nec_id === form.nec_id && c.id !== editingId);
       if (duplicate) newErrors.nec_id = 'អត្តលេខ គជប នេះមានរួចហើយ!';
     }
 
-    if (form.photo && !form.photo.startsWith('data:image/')) {
-      newErrors.photo = 'រូបថតត្រូវតែជាឯកសាររូបភាព!';
-    }
-
+    if (form.photo && !form.photo.startsWith('data:image/')) newErrors.photo = 'រូបថតត្រូវតែជាឯកសាររូបភាព!';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -116,15 +86,8 @@ const Candidates = () => {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        setErrors({ ...errors, photo: 'សូមជ្រើសរើសឯកសាររូបភាពតែប៉ុណ្ណោះ!' });
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors({ ...errors, photo: 'រូបថតត្រូវតែតូចជាង 5MB!' });
-        return;
-      }
-
+      if (!file.type.startsWith('image/')) { setErrors({ ...errors, photo: 'សូមជ្រើសរើសឯកសាររូបភាពតែប៉ុណ្ណោះ!' }); return; }
+      if (file.size > 5 * 1024 * 1024) { setErrors({ ...errors, photo: 'រូបថតត្រូវតែតូចជាង 5MB!' }); return; }
       const reader = new FileReader();
       reader.onloadend = () => {
         setForm({ ...form, photo: reader.result });
@@ -136,18 +99,11 @@ const Candidates = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      alert('សូមពិនិត្យទិន្នន័យដែលបានបំពេញ!');
-      return;
-    }
-
+    if (!validateForm()) { alert('សូមពិនិត្យទិន្នន័យដែលបានបំពេញ!'); return; }
     try {
       setSubmitting(true);
-      if (editingId) {
-        await apiUpdateCandidate(editingId, form);
-      } else {
-        await apiAddCandidate(form);
-      }
+      if (editingId) await apiUpdateCandidate(editingId, form);
+      else await apiAddCandidate(form);
       await loadCandidates();
       resetForm();
       alert('✅ រក្សាទុកដោយជោគជ័យ!');
@@ -160,17 +116,11 @@ const Candidates = () => {
 
   const handleEdit = (candidate) => {
     setForm({
-      number: candidate.number || '',
-      name: candidate.name || '',
-      gender: candidate.gender || '',
-      dob: candidate.dob ? candidate.dob.split('T')[0] : '',
-      education: candidate.education || '',
-      address: candidate.address || '',
-      commune: candidate.commune || '',
-      party_role: candidate.party_role || '',
-      gov_role: candidate.gov_role || '',
-      nec_id: candidate.nec_id || '',
-      photo: candidate.photo || '',
+      number: candidate.number || '', name: candidate.name || '', gender: candidate.gender || '',
+      dob: candidate.dob ? candidate.dob.split('T')[0] : '', education: candidate.education || '',
+      address: candidate.address || '', commune: candidate.commune || '',
+      party_role: candidate.party_role || '', gov_role: candidate.gov_role || '',
+      nec_id: candidate.nec_id || '', photo: candidate.photo || '',
     });
     setPhotoPreview(candidate.photo || '');
     setEditingId(candidate.id);
@@ -180,57 +130,39 @@ const Candidates = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm('តើអ្នកប្រាកដជាចង់លុបបេក្ខជននេះឬ?')) {
-      try {
-        await apiDeleteCandidate(id);
-        await loadCandidates();
-      } catch (error) {
-        alert('មានបញ្ហា: ' + error.message);
-      }
+      try { await apiDeleteCandidate(id); await loadCandidates(); }
+      catch (error) { alert('មានបញ្ហា: ' + error.message); }
     }
   };
 
   const handleExportPDF = async () => {
-    if (candidates.length === 0) {
-      alert('មិនមានទិន្នន័យសម្រាប់ Export ទេ!');
-      return;
-    }
+    if (candidates.length === 0) { alert('មិនមានទិន្នន័យសម្រាប់ Export ទេ!'); return; }
     await exportCandidatesToPDF();
   };
 
-  const handleViewDetail = (candidate) => {
-    setSelectedCandidate(candidate);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedCandidate(null);
-  };
+  const handleViewDetail = (candidate) => { setSelectedCandidate(candidate); setShowModal(true); };
+  const handleCloseModal = () => { setShowModal(false); setSelectedCandidate(null); };
 
   const ErrorMessage = ({ error }) => {
     if (!error) return null;
-    return (
-      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-        <FaExclamationTriangle /> {error}
-      </p>
-    );
+    return (<p className="text-red-500 text-xs mt-1 flex items-center gap-1"><FaExclamationTriangle /> {error}</p>);
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">គ្រប់គ្រងបេក្ខជន</h1>
-        <button onClick={handleExportPDF} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700 transition">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+        <h1 className="text-xl md:text-2xl font-bold">គ្រប់គ្រងបេក្ខជន</h1>
+        <button onClick={handleExportPDF} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700 transition text-sm">
           <FaFilePdf /> ទាញយក PDF
         </button>
       </div>
 
       {/* Form */}
-      <div className="bg-white p-6 rounded-xl shadow mb-6">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow mb-6">
+        <h2 className="text-base md:text-lg font-semibold mb-4">
           {editingId ? '✏️ កែប្រែព័ត៌មានបេក្ខជន' : '➕ បន្ថែមបេក្ខជនថ្មី'}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-semibold mb-1">លេខរៀង <span className="text-red-500">*</span></label>
             <input type="number" value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.number ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`} />
@@ -284,32 +216,32 @@ const Candidates = () => {
             <input type="text" value={form.nec_id} onChange={(e) => setForm({ ...form, nec_id: e.target.value })} className={`w-full border p-2 rounded-lg focus:outline-none focus:ring-2 ${errors.nec_id ? 'border-red-500 focus:ring-red-300' : 'focus:ring-primary'}`} />
             <ErrorMessage error={errors.nec_id} />
           </div>
-          <div className="md:col-span-3">
+          <div className="sm:col-span-2 lg:col-span-3">
             <label className="block text-sm font-semibold mb-1">រូបថត</label>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 border-2 border-dashed border-gray-400 rounded-lg px-4 py-3 flex items-center gap-2">
                 <FaCamera className="text-gray-600" />
                 <span className="text-sm text-gray-600">ជ្រើសរើសរូបថត</span>
                 <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
               </label>
-              {photoPreview && (<img src={photoPreview} alt="Preview" className="w-20 h-20 object-cover rounded-lg border shadow" />)}
+              {photoPreview && (<img src={photoPreview} alt="Preview" className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg border shadow" />)}
             </div>
             <ErrorMessage error={errors.photo} />
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="flex flex-col sm:flex-row gap-3 mt-6">
           {editingId ? (
             <>
-              <button onClick={handleSubmit} disabled={submitting} className={`rounded-lg px-6 py-2 flex items-center gap-2 transition ${submitting ? 'bg-gray-400 cursor-not-allowed text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
+              <button onClick={handleSubmit} disabled={submitting} className={`rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition ${submitting ? 'bg-gray-400 cursor-not-allowed text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
                 <FaSave /> {submitting ? 'កំពុងរក្សាទុក...' : 'រក្សាទុក'}
               </button>
-              <button onClick={resetForm} className="bg-gray-500 text-white rounded-lg px-6 py-2 flex items-center gap-2 hover:bg-gray-600 transition">
+              <button onClick={resetForm} className="bg-gray-500 text-white rounded-lg px-6 py-2 flex items-center justify-center gap-2 hover:bg-gray-600 transition">
                 <FaTimes /> បោះបង់
               </button>
             </>
           ) : (
-            <button onClick={handleSubmit} disabled={submitting} className={`rounded-lg px-6 py-2 flex items-center gap-2 transition ${submitting ? 'bg-gray-400 cursor-not-allowed text-white' : 'bg-primary hover:bg-blue-700 text-white'}`}>
+            <button onClick={handleSubmit} disabled={submitting} className={`rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition ${submitting ? 'bg-gray-400 cursor-not-allowed text-white' : 'bg-primary hover:bg-blue-700 text-white'}`}>
               <FaPlus /> {submitting ? 'កំពុងរក្សាទុក...' : 'បន្ថែមបេក្ខជន'}
             </button>
           )}
@@ -319,21 +251,21 @@ const Candidates = () => {
       {/* Table */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <h3 className="p-4 bg-gray-100 font-semibold">គ្រប់គ្រងបេក្ខជន</h3>
-        <table className="w-full text-left min-w-[1300px]">
+        <table className="w-full text-left min-w-[1100px]">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-3">រូបថត</th>
-              <th className="p-3">លេខរៀង</th>
-              <th className="p-3">ឈ្មោះ</th>
-              <th className="p-3">ភេទ</th>
-              <th className="p-3">ថ្ងៃខែឆ្នាំកំណើត</th>
-              <th className="p-3">កំរិតវប្បធម៌</th>
-              <th className="p-3">ទីលំនៅ</th>
-              <th className="p-3">ឃុំ</th>
-              <th className="p-3">តួនាទីក្នុងបក្ស</th>
-              <th className="p-3">តួនាទីក្នុងរដ្ឋ</th>
-              <th className="p-3">អត្តលេខ គជប</th>
-              <th className="p-3 text-center">សកម្មភាព</th>
+              <th className="p-3 text-sm">រូបថត</th>
+              <th className="p-3 text-sm">លេខរៀង</th>
+              <th className="p-3 text-sm">ឈ្មោះ</th>
+              <th className="p-3 text-sm">ភេទ</th>
+              <th className="p-3 text-sm">ថ្ងៃខែឆ្នាំកំណើត</th>
+              <th className="p-3 text-sm">កំរិតវប្បធម៌</th>
+              <th className="p-3 text-sm">ទីលំនៅ</th>
+              <th className="p-3 text-sm">ឃុំ</th>
+              <th className="p-3 text-sm">តួនាទីក្នុងបក្ស</th>
+              <th className="p-3 text-sm">តួនាទីក្នុងរដ្ឋ</th>
+              <th className="p-3 text-sm">អត្តលេខ គជប</th>
+              <th className="p-3 text-sm text-center">សកម្មភាព</th>
             </tr>
           </thead>
           <tbody>
@@ -344,22 +276,22 @@ const Candidates = () => {
             ) : (
               candidates.map((c) => (
                 <tr key={c.id} className={`border-b hover:bg-gray-50 transition ${editingId === c.id ? 'bg-yellow-50' : ''}`}>
-                  <td className="p-3">{c.photo ? <img src={c.photo} alt={c.name} className="w-12 h-12 object-cover rounded-full border" /> : <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs">គ្មាន</div>}</td>
-                  <td className="p-3 font-semibold">{c.number}</td>
-                  <td className="p-3">{c.name}</td>
-                  <td className="p-3">{c.gender}</td>
-                  <td className="p-3">{c.dob ? new Date(c.dob).toLocaleDateString('km-KH') : '-'}</td>
-                  <td className="p-3">{c.education || '-'}</td>
-                  <td className="p-3">{c.address || '-'}</td>
-                  <td className="p-3">{c.commune || '-'}</td>
-                  <td className="p-3">{c.party_role || '-'}</td>
-                  <td className="p-3">{c.gov_role || '-'}</td>
-                  <td className="p-3">{c.nec_id || '-'}</td>
+                  <td className="p-3">{c.photo ? <img src={c.photo} alt={c.name} className="w-10 h-10 md:w-12 md:h-12 object-cover rounded-full border" /> : <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs">គ្មាន</div>}</td>
+                  <td className="p-3 font-semibold text-sm">{c.number}</td>
+                  <td className="p-3 text-sm">{c.name}</td>
+                  <td className="p-3 text-sm">{c.gender}</td>
+                  <td className="p-3 text-sm">{c.dob ? new Date(c.dob).toLocaleDateString('km-KH') : '-'}</td>
+                  <td className="p-3 text-sm">{c.education || '-'}</td>
+                  <td className="p-3 text-sm">{c.address || '-'}</td>
+                  <td className="p-3 text-sm">{c.commune || '-'}</td>
+                  <td className="p-3 text-sm">{c.party_role || '-'}</td>
+                  <td className="p-3 text-sm">{c.gov_role || '-'}</td>
+                  <td className="p-3 text-sm">{c.nec_id || '-'}</td>
                   <td className="p-3">
-                    <div className="flex justify-center gap-3">
-                      <button onClick={() => handleViewDetail(c)} className="text-green-500 hover:text-green-700 transition" title="មើលលម្អិត"><FaEye size={18} /></button>
-                      <button onClick={() => handleEdit(c)} className="text-blue-500 hover:text-blue-700 transition" title="កែប្រែ"><FaEdit size={18} /></button>
-                      <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 transition" title="លុប"><FaTrash size={18} /></button>
+                    <div className="flex justify-center gap-2 md:gap-3">
+                      <button onClick={() => handleViewDetail(c)} className="text-green-500 hover:text-green-700 transition" title="មើលលម្អិត"><FaEye size={16} /></button>
+                      <button onClick={() => handleEdit(c)} className="text-blue-500 hover:text-blue-700 transition" title="កែប្រែ"><FaEdit size={16} /></button>
+                      <button onClick={() => handleDelete(c.id)} className="text-red-500 hover:text-red-700 transition" title="លុប"><FaTrash size={16} /></button>
                     </div>
                   </td>
                 </tr>
@@ -369,7 +301,6 @@ const Candidates = () => {
         </table>
       </div>
 
-      {/* Modal */}
       {showModal && (<CandidateDetailModal candidate={selectedCandidate} onClose={handleCloseModal} />)}
     </div>
   );

@@ -14,8 +14,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ពិនិត្យ Token ពេលបើក App
   useEffect(() => {
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
@@ -44,7 +44,6 @@ function App() {
     );
   }
 
-  // ប្រសិនបើមិនទាន់ Login → បង្ហាញតែទំព័រ Login
   if (!user) {
     return (
       <Router>
@@ -56,66 +55,44 @@ function App() {
     );
   }
 
-  // ប្រសិនបើ Login រួច → បង្ហាញ App ពេញលេញ
   return (
     <Router>
-      <Navbar user={user} onLogout={handleLogout} />
-      <div className="flex">
-        <Sidebar user={user} />
-        <main className="flex-1">
-          <Routes>
-            {/* ទំព័រទាំងអស់អាចចូលបានដោយ Admin និង Observer */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute user={user} allowedRoles={['admin', 'observer']}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/candidates"
-              element={
-                <ProtectedRoute user={user} allowedRoles={['admin', 'observer']}>
-                  <Candidates />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/voters"
-              element={
-                <ProtectedRoute user={user} allowedRoles={['admin', 'observer']}>
-                  <Voters />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/voting"
-              element={
-                <ProtectedRoute user={user} allowedRoles={['admin', 'observer']}>
-                  <Voting />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/results"
-              element={
-                <ProtectedRoute user={user} allowedRoles={['admin', 'observer']}>
-                  <Results />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/print-ballot"
-              element={
-                <ProtectedRoute user={user} allowedRoles={['admin', 'observer']}>
-                  <PrintBallot />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar
+          user={user}
+          onLogout={handleLogout}
+          onMenuClick={() => setSidebarOpen(true)}
+        />
+
+        <div className="flex flex-1 relative">
+          {/* Sidebar - Responsive */}
+          <Sidebar
+            user={user}
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+
+          {/* Overlay សម្រាប់ទូរស័ព្ទ */}
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+            ></div>
+          )}
+
+          {/* Main Content */}
+          <main className="flex-1 w-full overflow-x-hidden">
+            <Routes>
+              <Route path="/" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Dashboard /></ProtectedRoute>} />
+              <Route path="/candidates" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Candidates /></ProtectedRoute>} />
+              <Route path="/voters" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Voters /></ProtectedRoute>} />
+              <Route path="/voting" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Voting /></ProtectedRoute>} />
+              <Route path="/results" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Results /></ProtectedRoute>} />
+              <Route path="/print-ballot" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><PrintBallot /></ProtectedRoute>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
       </div>
     </Router>
   );

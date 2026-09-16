@@ -1,12 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  FaTachometerAlt,
-  FaUsers,
-  FaVoteYea,
-  FaChartBar,
-  FaUserTie,
-  FaPrint,
+  FaTachometerAlt, FaUsers, FaVoteYea, FaChartBar,
+  FaUserTie, FaPrint, FaTimes,
 } from 'react-icons/fa';
 
 const menuItems = [
@@ -18,25 +14,39 @@ const menuItems = [
   { path: '/print-ballot', label: 'បោះពុម្ពសន្លឹកឆ្នោត', icon: <FaPrint /> },
 ];
 
-const Sidebar = ({ user }) => {
+const Sidebar = ({ user, isOpen, onClose }) => {
   const location = useLocation();
 
-  // ប្រសិនបើជា Observer → លាក់ម៉ឺនុយមួយចំនួន
   const filteredMenuItems = menuItems.filter((item) => {
     if (user?.role === 'observer') {
-      // Observer មិនអាចចូល "គ្រប់គ្រងបេក្ខជន", "គ្រប់គ្រងអ្នកបោះឆ្នោត"
       return !['/candidates', '/voters'].includes(item.path);
     }
     return true;
   });
 
   return (
-    <aside className="w-64 bg-white h-screen shadow-lg p-4 no-print">
-      <ul className="space-y-2">
+    <aside
+      className={`
+        fixed md:static inset-y-0 left-0 z-50
+        w-64 bg-white shadow-lg p-4
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        no-print flex flex-col h-full
+      `}
+    >
+      <div className="flex justify-between items-center mb-4 md:hidden">
+        <h2 className="text-lg font-bold text-primary">ម៉ឺនុយ</h2>
+        <button onClick={onClose} className="text-gray-500 text-2xl focus:outline-none">
+          <FaTimes />
+        </button>
+      </div>
+
+      <ul className="space-y-2 flex-1 overflow-y-auto">
         {filteredMenuItems.map((item) => (
           <li key={item.path}>
             <Link
               to={item.path}
+              onClick={onClose}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
                 location.pathname === item.path
                   ? 'bg-primary text-white'
