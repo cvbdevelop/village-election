@@ -30,44 +30,54 @@ const PrintBallot = () => {
 
   // បង្កើត Grid ៥ ជួរឈរ x ៥ ជួរដេក (សរុប ២៥ ប្រអប់)
   const renderGridCells = () => {
-    const totalCells = 25;
+    const totalRows = 5;
+    const totalCols = 5;
     const cells = [];
 
-    for (let i = 0; i < totalCells; i++) {
-      const candidate = candidates[i]; // យកបេក្ខជនតាមលំដាប់
+    for (let row = 0; row < totalRows; row++) {
+      for (let col = 0; col < totalCols; col++) {
+        const index = row * totalCols + col;
+        const candidate = candidates[index];
 
-      cells.push(
-        <div key={i} className="border border-black flex flex-col justify-between relative min-h-[140px] p-2">
-          {candidate ? (
-            <div className="flex flex-col items-center flex-1">
-              {/* រូបថតបេក្ខជន */}
-              <div className="w-20 h-24 border border-gray-400 mb-1 flex items-center justify-center overflow-hidden bg-gray-50">
-                {candidate.photo ? (
-                  <img src={candidate.photo} alt={candidate.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-gray-400 text-xs text-center">គ្មានរូបថត</span>
-                )}
-              </div>
-              {/* លេខរៀង និងឈ្មោះ */}
-              <div className="w-full text-center">
-                <p className="font-bold text-sm leading-tight">
+        cells.push(
+          <div
+            key={`${row}-${col}`}
+            className="border-r border-b border-black relative"
+            style={{ minHeight: '140px', height: '140px' }}
+          >
+            {/* ព័ត៌មានបេក្ខជន (ប្រសិនបើមាន) */}
+            {candidate && (
+              <div className="flex flex-col items-center p-2 h-full">
+                {/* រូបថត */}
+                <div className="w-16 h-20 border border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50 mb-1">
+                  {candidate.photo ? (
+                    <img
+                      src={candidate.photo}
+                      alt={candidate.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-[10px] text-center">គ្មានរូប</span>
+                  )}
+                </div>
+                {/* លេខរៀង និងឈ្មោះ */}
+                <p className="text-[11px] font-bold text-center leading-tight">
                   {candidate.number}. {candidate.name}
                 </p>
-                <p className="text-xs text-gray-600 leading-tight">
-                  ({candidate.party_role || candidate.gov_role || 'គ្មានគណបក្ស'})
+                <p className="text-[9px] text-gray-600 text-center leading-tight">
+                  ({candidate.party_role || candidate.gov_role || '-'})
                 </p>
               </div>
-            </div>
-          ) : (
-            <div className="flex-1"></div> // ទំហំទទេសម្រាប់ប្រអប់ដែលគ្មានបេក្ខជន
-          )}
+            )}
 
-          {/* ប្រអប់ធីក (Checkbox) នៅខាងក្រោមស្តាំ */}
-          <div className="self-end mt-auto pt-2">
-            <div className="w-8 h-8 border-2 border-blue-600 rounded-sm bg-white"></div>
+            {/* ប្រអប់ធីក (Checkbox) ជ្រុងខាងក្រោមស្តាំ */}
+            <div
+              className="absolute border-2 border-blue-600 bg-white"
+              style={{ width: '28px', height: '28px', bottom: '8px', right: '8px' }}
+            ></div>
           </div>
-        </div>
-      );
+        );
+      }
     }
     return cells;
   };
@@ -93,7 +103,7 @@ const PrintBallot = () => {
   return (
     <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
       {/* Control Panel (លាក់ពេលបោះពុម្ព) */}
-      <div className="no-print bg-white p-4 md:p-6 rounded-xl shadow mb-6 max-w-5xl mx-auto">
+      <div className="no-print bg-white p-4 md:p-6 rounded-xl shadow mb-6 max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
@@ -133,50 +143,52 @@ const PrintBallot = () => {
       {/* តំបន់សន្លឹកឆ្នោត */}
       <div id="ballot-print-area" className="ballot-container">
         {Array.from({ length: copies }).map((_, copyIndex) => (
-          <div key={copyIndex} className="ballot-page bg-white p-6 md:p-8 mb-8" style={{ pageBreakAfter: copyIndex < copies - 1 ? 'always' : 'auto' }}>
-            
+          <div
+            key={copyIndex}
+            className="ballot-page bg-white p-4 md:p-6 mb-8"
+            style={{ pageBreakAfter: copyIndex < copies - 1 ? 'always' : 'auto' }}
+          >
             {/* ============ Header សន្លឹកឆ្នោត ============ */}
-            <div className="text-center mb-4">
-              <div className="flex justify-between items-start text-xs md:text-sm font-bold">
-                <div className="text-left leading-tight">
+            <div className="text-center mb-3">
+              <div className="flex justify-between items-start text-[10px] md:text-xs font-bold">
+                <div className="text-left leading-tight w-1/3">
                   <p>គណៈកម្មាធិការជាតិរៀបចំការបោះឆ្នោត</p>
                   <p>គណៈកម្មការរៀបចំការបោះឆ្នោតឃុំ/សង្កាត់</p>
                   <p>គណៈអចិន្ត្រៃយ៍</p>
                 </div>
-                <div className="flex flex-col items-center justify-center">
-                  {/* រូបសញ្ញាជាតិ (ឧបមា) */}
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-red-100 rounded-full flex items-center justify-center border-2 border-blue-900 text-blue-900 font-bold text-[10px] text-center leading-tight p-1">
+                <div className="flex flex-col items-center justify-center w-1/3">
+                  <div className="w-14 h-14 md:w-16 md:h-16 bg-red-100 rounded-full flex items-center justify-center border-2 border-blue-900 text-blue-900 font-bold text-[8px] md:text-[9px] text-center leading-tight p-1">
                     ព្រះរាជាណាចក្រ<br/>កម្ពុជា
                   </div>
                 </div>
-                <div className="text-right leading-tight">
+                <div className="text-right leading-tight w-1/3">
                   <p>ឯករាជ្យ សន្តិភាព សេរីភាព ប្រជាធិបតេយ្យ</p>
                   <p>អព្យាក្រឹត និង វឌ្ឍនភាពសង្គម</p>
                 </div>
               </div>
 
-              <h1 className="text-lg md:text-xl font-bold mt-4 text-blue-900">
+              <h1 className="text-sm md:text-base font-bold mt-3 text-blue-900">
                 សន្លឹកឆ្នោតបោះឆ្នោតជ្រើសរើសក្រុមប្រឹក្សាឃុំ/សង្កាត់
               </h1>
-              <p className="text-sm md:text-base font-bold text-blue-900">
+              <p className="text-xs md:text-sm font-bold text-blue-900 mt-1">
                 អាណត្តិទី៦ ឆ្នាំ២០២៧
               </p>
             </div>
 
             {/* ============ សេចក្តីណែនាំ ============ */}
-            <div className="bg-blue-50 border border-blue-400 p-3 rounded-lg mb-4 text-center">
-              <p className="text-xs md:text-sm text-gray-800">
+            <div className="border border-blue-400 p-2 rounded mb-3 text-center bg-blue-50">
+              <p className="text-[10px] md:text-xs text-gray-800">
                 សូមគូសសញ្ញា <span className="font-bold text-blue-600">✓</span> ក្នុងប្រអប់បន្ទាត់ដេកខាងក្រោមរូបថតបេក្ខជនដែលលោកអ្នកពេញចិត្តចំនួន.........រូប។
               </p>
             </div>
 
-            {/* ============ Grid បេក្ខជន ៥ ជួរឈរ ============ */}
+            {/* ============ Grid បេក្ខជន ៥ ជួរឈរ x ៥ ជួរដេក ============ */}
             <div className="grid grid-cols-5 border-t-2 border-l-2 border-black">
               {renderGridCells()}
             </div>
 
             {/* ============ Footer ============ */}
-            <div className="mt-4 text-center text-xs text-gray-500">
+            <div className="mt-3 text-center text-[9px] md:text-xs text-gray-500">
               <p>សន្លឹកឆ្នោតនេះមានសុពលភាពសម្រាប់ការបោះឆ្នោតតែម្តងគត់</p>
               <p className="mt-1">ច្បាប់ទី {copyIndex + 1} / {copies}</p>
             </div>
@@ -189,9 +201,18 @@ const PrintBallot = () => {
         @media print {
           .no-print { display: none !important; }
           body { background: white !important; margin: 0 !important; padding: 0 !important; }
-          .ballot-page { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 20px !important; page-break-after: always; }
+          .ballot-page {
+            box-shadow: none !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 15px !important;
+            page-break-after: always;
+          }
           .ballot-page:last-child { page-break-after: auto; }
-          @page { size: A4 landscape; margin: 10mm; } /* ប្រើ Landscape ដើម្បីឱ្យសមនឹង ៥ ជួរឈរ */
+          @page {
+            size: A4 landscape;
+            margin: 8mm;
+          }
         }
       `}</style>
     </div>
