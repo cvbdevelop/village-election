@@ -1,3 +1,4 @@
+import { getCommunes } from '../data/locations';
 import React, { useState, useEffect } from 'react';
 import {
   FaPlus,
@@ -32,17 +33,18 @@ const Candidates = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [form, setForm] = useState({
-    number: '',
-    name: '',
-    gender: '',
-    dob: '',
-    education: '',
-    address: '',
-    party_role: '',
-    gov_role: '',
-    nec_id: '',
-    photo: '',
-  });
+  number: '',
+  name: '',
+  gender: '',
+  dob: '',
+  education: '',
+  address: '',
+  commune: '', // ⬅️ បន្ថែមថ្មី
+  party_role: '',
+  gov_role: '',
+  nec_id: '',
+  photo: '',
+});
 
   const loadCandidates = async () => {
     try {

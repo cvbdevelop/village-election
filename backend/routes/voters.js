@@ -1,3 +1,4 @@
+// backend/routes/voters.js
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
@@ -16,9 +17,12 @@ router.get('/', async (req, res) => {
 // POST ចុះឈ្មោះអ្នកបោះឆ្នោតថ្មី
 router.post('/', async (req, res) => {
   try {
-    const { name, idCard, commune, station } = req.body;
+    const { name, idCard, commune, village, station } = req.body;
     if (!name || !idCard) {
       return res.status(400).json({ error: 'សូមបំពេញឈ្មោះ និងអត្តសញ្ញាណប័ណ្ណ' });
+    }
+    if (!commune || !village) {
+      return res.status(400).json({ error: 'សូមជ្រើសរើសឃុំ និងភូមិ' });
     }
 
     const [existing] = await db.query('SELECT * FROM voters WHERE id_card = ?', [idCard]);
@@ -27,9 +31,9 @@ router.post('/', async (req, res) => {
     }
 
     const [rows] = await db.query(
-      `INSERT INTO voters (name, id_card, commune, station) 
-       VALUES (?, ?, ?, ?) RETURNING *`,
-      [name, idCard, commune, station]
+      `INSERT INTO voters (name, id_card, commune, village, station) 
+       VALUES (?, ?, ?, ?, ?) RETURNING *`,
+      [name, idCard, commune, village, station]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -42,12 +46,12 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, idCard, commune, station } = req.body;
+    const { name, idCard, commune, village, station } = req.body;
 
     const [rows] = await db.query(
-      `UPDATE voters SET name = ?, id_card = ?, commune = ?, station = ? 
+      `UPDATE voters SET name = ?, id_card = ?, commune = ?, village = ?, station = ? 
        WHERE id = ? RETURNING *`,
-      [name, idCard, commune, station, id]
+      [name, idCard, commune, village, station, id]
     );
     res.json(rows[0]);
   } catch (error) {
@@ -76,11 +80,7 @@ router.post('/verify', async (req, res) => {
       return res.status(400).json({ error: 'សូមបញ្ចូលអត្តសញ្ញាណប័ណ្ណ' });
     }
 
-    const [voters] = await db.query(
-      'SELECT * FROM voters WHERE id_card = ?',
-      [idCard]
-    );
-
+    const [voters] = await db.query('SELECT * FROM voters WHERE id_card = ?', [idCard]);
     if (voters.length === 0) {
       return res.status(404).json({ error: 'រកមិនឃើញអត្តសញ្ញាណប័ណ្ណនេះទេ!' });
     }

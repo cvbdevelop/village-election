@@ -33,20 +33,22 @@ router.post('/', async (req, res) => {
   try {
     const {
       number, name, gender, dob, education,
-      address, party_role, gov_role, nec_id, photo,
+      address, commune, party_role, gov_role, nec_id, photo,
     } = req.body;
 
     if (!name) {
       return res.status(400).json({ error: 'សូមបំពេញឈ្មោះបេក្ខជន' });
     }
+    if (!commune) {
+      return res.status(400).json({ error: 'សូមជ្រើសរើសឃុំ' });
+    }
 
-    // ប្រើ RETURNING សម្រាប់ PostgreSQL
     const [rows] = await db.query(
       `INSERT INTO candidates 
-        (number, name, gender, dob, education, address, party_role, gov_role, nec_id, photo) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (number, name, gender, dob, education, address, commune, party_role, gov_role, nec_id, photo) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        RETURNING *`,
-      [number, name, gender, dob || null, education, address, party_role, gov_role, nec_id, photo]
+      [number, name, gender, dob || null, education, address, commune, party_role, gov_role, nec_id, photo]
     );
 
     res.status(201).json(rows[0]);
@@ -62,16 +64,16 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const {
       number, name, gender, dob, education,
-      address, party_role, gov_role, nec_id, photo,
+      address, commune, party_role, gov_role, nec_id, photo,
     } = req.body;
 
     const [rows] = await db.query(
       `UPDATE candidates SET 
         number = ?, name = ?, gender = ?, dob = ?, education = ?, 
-        address = ?, party_role = ?, gov_role = ?, nec_id = ?, photo = ?
+        address = ?, commune = ?, party_role = ?, gov_role = ?, nec_id = ?, photo = ?
        WHERE id = ?
        RETURNING *`,
-      [number, name, gender, dob || null, education, address, party_role, gov_role, nec_id, photo, id]
+      [number, name, gender, dob || null, education, address, commune, party_role, gov_role, nec_id, photo, id]
     );
 
     if (rows.length === 0) {
