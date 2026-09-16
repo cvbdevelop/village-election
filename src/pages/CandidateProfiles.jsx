@@ -33,8 +33,8 @@ const CandidateProfiles = () => {
 
   if (results.length === 0) {
     return (
-      <div className="p-6 bg-[#0b1b3d] min-h-screen">
-        <div className="bg-yellow-50 border border-yellow-400 text-yellow-700 px-4 py-3 rounded text-center max-w-2xl mx-auto">
+      <div className="p-6 bg-[#0b1b3d] min-h-screen flex justify-center items-center">
+        <div className="bg-yellow-50 border border-yellow-400 text-yellow-700 px-6 py-4 rounded-xl text-center max-w-md">
           មិនទាន់មានបេក្ខជនទេ។ សូមបន្ថែមបេក្ខជនជាមុនសិន។
         </div>
       </div>
@@ -43,20 +43,20 @@ const CandidateProfiles = () => {
 
   return (
     <div className="p-4 md:p-8 bg-[#0b1b3d] min-h-screen">
-      <div className="max-w-5xl mx-auto bg-[#0b1b3d] rounded-2xl shadow-2xl overflow-hidden border border-white/10">
+      <div className="max-w-5xl mx-auto">
         
         {/* ============ Header Title ============ */}
-        <div className="bg-white p-4 md:p-6 text-center">
+        <div className="bg-white rounded-t-2xl p-4 md:p-6 text-center shadow-lg">
           <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#0b1b3d] uppercase tracking-wide">
             លទ្ធផលបោះឆ្នោតជ្រើសរើសបេក្ខជន
           </h1>
-          <p className="text-gray-600 text-xs md:text-sm mt-2">
+          <p className="text-gray-600 text-xs md:text-sm mt-1">
             ក្រុមប្រឹក្សាឃុំ/សង្កាត់ — កាលបរិច្ឆេទ៖ {new Date().toLocaleDateString('km-KH')}
           </p>
         </div>
 
         {/* ============ Candidate Grid ============ */}
-        <div className="p-4 md:p-6">
+        <div className="bg-[#0b1b3d] p-4 md:p-6 border-x border-b border-white/10 rounded-b-2xl shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             {results.map((candidate, index) => {
               const rank = index + 1;
@@ -65,10 +65,10 @@ const CandidateProfiles = () => {
               return (
                 <div
                   key={candidate.id}
-                  className="bg-white rounded-xl p-3 md:p-4 flex items-center gap-3 md:gap-4 shadow-md hover:shadow-lg transition duration-300"
+                  className="bg-white rounded-xl p-3 md:p-4 flex items-center gap-3 md:gap-4 shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1"
                 >
-                  {/* Rank Number */}
-                  <div className="text-2xl md:text-3xl font-bold text-[#0b1b3d] min-w-[35px] md:min-w-[45px] text-center flex-shrink-0">
+                  {/* Rank Number - ពណ៌លឿងដូច Poster */}
+                  <div className="text-3xl md:text-4xl font-extrabold text-yellow-500 min-w-[40px] md:min-w-[50px] text-center flex-shrink-0">
                     {rank}.
                   </div>
 
@@ -99,7 +99,7 @@ const CandidateProfiles = () => {
                       <span className="text-xs md:text-sm font-bold text-green-700">
                         {candidate.votes} សំឡេង
                       </span>
-                      <span className="text-xs md:text-sm text-gray-500">
+                      <span className="text-xs md:text-sm text-gray-500 font-semibold">
                         ({percent}%)
                       </span>
                     </div>
@@ -111,7 +111,7 @@ const CandidateProfiles = () => {
         </div>
 
         {/* ============ Footer Summary ============ */}
-        <div className="bg-[#0b1b3d] p-3 md:p-4 text-center border-t border-white/10">
+        <div className="bg-[#0b1b3d] mt-4 p-3 md:p-4 text-center border-t border-white/10 rounded-b-2xl">
           <p className="text-gray-300 text-xs md:text-sm">
             សំឡេងឆ្នោតសរុប៖{' '}
             <span className="font-bold text-white">{totalVotes}</span>
