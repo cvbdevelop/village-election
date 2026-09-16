@@ -10,6 +10,7 @@ import Results from './pages/Results';
 import PrintBallot from './pages/PrintBallot';
 import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import CandidateProfiles from './pages/CandidateProfiles';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -90,6 +91,7 @@ function App() {
               <Route path="/results" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Results /></ProtectedRoute>} />
               <Route path="/print-ballot" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><PrintBallot /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/candidate-profiles" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><CandidateProfiles /></ProtectedRoute>} />
             </Routes>
           </main>
         </div>

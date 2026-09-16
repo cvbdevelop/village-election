@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaIdCard } from 'react-icons/fa'; // ឬ Icon ផ្សេង
 import { Link, useLocation } from 'react-router-dom';
 import {
   FaTachometerAlt, FaUsers, FaVoteYea, FaChartBar,
@@ -8,6 +9,7 @@ import {
 const menuItems = [
   { path: '/', label: 'ផ្ទាំងគ្រប់គ្រង', icon: <FaTachometerAlt /> },
   { path: '/candidates', label: 'បេក្ខជន', icon: <FaUserTie /> },
+  { path: '/candidate-profiles', label: 'ទម្រង់បេក្ខជន', icon: <FaIdCard /> }, // ⬅️ បន្ថែមថ្មី
   { path: '/voters', label: 'អ្នកបោះឆ្នោត', icon: <FaUsers /> },
   { path: '/voting', label: 'បោះឆ្នោត', icon: <FaVoteYea /> },
   { path: '/results', label: 'លទ្ធផល', icon: <FaChartBar /> },
