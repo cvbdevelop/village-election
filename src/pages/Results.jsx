@@ -127,7 +127,10 @@ const Results = () => {
               ))}
             </div>
             {isTie && (
-              <p className="text-sm mt-4 bg-white bg-opacity-20 p-2 rounded">
+              <p
+                className="text-sm mt-4 p-2 rounded font-semibold"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)', color: '#ffffff' }}
+              >
                 ⚠️ មានបេក្ខជន {winners.length} នាក់ ដែលទទួលបានសំឡេងស្មើគ្នា ({winners[0].votes} សំឡេង)
               </p>
             )}
