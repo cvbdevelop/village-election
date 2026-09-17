@@ -8,10 +8,10 @@ import Voters from './pages/Voters';
 import Voting from './pages/Voting';
 import Results from './pages/Results';
 import PrintBallot from './pages/PrintBallot';
-import Login from './pages/Login';
-import ProtectedRoute from './components/ProtectedRoute';
 import CandidateProfiles from './pages/CandidateProfiles';
 import AdvancedStats from './pages/AdvancedStats';
+import Login from './pages/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -87,14 +87,13 @@ function App() {
             <Routes>
               <Route path="/" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Dashboard /></ProtectedRoute>} />
               <Route path="/candidates" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Candidates /></ProtectedRoute>} />
+              <Route path="/candidate-profiles" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><CandidateProfiles /></ProtectedRoute>} />
               <Route path="/voters" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Voters /></ProtectedRoute>} />
               <Route path="/voting" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Voting /></ProtectedRoute>} />
               <Route path="/results" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><Results /></ProtectedRoute>} />
+              <Route path="/advanced-stats" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><AdvancedStats /></ProtectedRoute>} />
               <Route path="/print-ballot" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><PrintBallot /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
-              <Route path="/candidate-profiles" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><CandidateProfiles /></ProtectedRoute>} />
-              // បន្ថែម Route ក្នុង <Routes>
-              <Route path="/advanced-stats" element={<ProtectedRoute user={user} allowedRoles={['admin', 'observer']}><AdvancedStats /></ProtectedRoute>} />
             </Routes>
           </main>
         </div>
